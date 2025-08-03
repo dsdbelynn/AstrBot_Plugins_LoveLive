@@ -1,4 +1,5 @@
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult，MessageChain
+from astrbot.api.event import MessageChain
+from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
 import aiohttp
@@ -9,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 
 SUBSCRIBERS_FILE_PATH = "/AstrBot/data/subscribers.json"
 
-@register("LoveLive", "Lynn", "一个简单的插件", "1.0.5")
+@register("LoveLive", "Lynn", "一个简单的插件", "1.0.6")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
