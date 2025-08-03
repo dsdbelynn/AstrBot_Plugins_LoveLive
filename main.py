@@ -1,7 +1,6 @@
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
+from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult，MessageChain
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
-from astrbot.api.message import MessageChain
 import aiohttp
 import json
 import asyncio
