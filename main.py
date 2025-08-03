@@ -43,3 +43,22 @@ class MyPlugin(Star):
     async def sweetNothing_m(self, event: AstrMessageEvent):
         ret = await self.get_sweet_nothing("F")  # F代表绿茶/渣女
         yield event.plain_result(ret)
+        
+    @filter.command("测试")
+    async def sweetNothing_Hello(self, event: AstrMessageEvent):
+        from datetime import datetime, timezone, timedelta
+        
+        # 获取当前UTC+8时间（北京时间）
+        utc8_tz = timezone(timedelta(hours=8))
+        current_time = datetime.now(utc8_tz)
+        
+        # 格式化时间为指定格式：2025/08/04 02:01:01
+        time_str = current_time.strftime("%Y/%m/%d %H:%M:%S")
+        
+        # 获取渣女语录
+        quote = await self.get_sweet_nothing("F")
+        
+        # 组合当前时间和渣女语录
+        ret = f"{time_str}\n{quote}"
+        yield event.plain_result(ret)
+        
