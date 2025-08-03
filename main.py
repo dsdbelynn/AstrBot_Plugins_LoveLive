@@ -48,7 +48,6 @@ class MyPlugin(Star):
             # 异常时使用默认值
             API_KEY = "123"
         
-        return API_KEY
 
     def build_sweet_nothing_prompt(gender_type: str, time_period: str, count: int) -> str:
         """构建针对不同时间段的提示词"""
