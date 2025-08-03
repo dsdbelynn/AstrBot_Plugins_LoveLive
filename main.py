@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 
 SUBSCRIBERS_FILE_PATH = "/AstrBot/data/subscribers.json"
 
-@register("LoveLive", "Lynn", "一个简单的插件", "1.0.2")
+@register("LoveLive", "Lynn", "一个简单的插件", "1.0.3")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
