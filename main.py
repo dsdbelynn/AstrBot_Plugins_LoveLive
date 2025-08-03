@@ -29,6 +29,7 @@ class MyPlugin(Star):
 
     def check_api_key(self):
         """检查API_KEY文件，读取到全局变量中，没有则创建并填入123"""
+        global API_KEY  # 添加这行
         
         try:
             # 确保目录存在
