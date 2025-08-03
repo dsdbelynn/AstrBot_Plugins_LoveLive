@@ -15,7 +15,7 @@ DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
 SUBSCRIBERS_FILE_PATH = "/AstrBot/data/subscribers.json"
 
-@register("LoveLive", "Lynn", "一个简单的插件", "1.0.9")
+@register("LoveLive", "Lynn", "一个简单的插件", "1.0.10")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
@@ -272,7 +272,7 @@ class MyPlugin(Star):
         yield event.plain_result(ret)
 
     @filter.command("测试d")
-    async def sweetNothing_Hello(self, event: AstrMessageEvent):
+    async def sweetNothing_Hello_d(self, event: AstrMessageEvent):
         from datetime import datetime, timezone, timedelta
         
         # 获取当前UTC+8时间（北京时间）
@@ -329,7 +329,7 @@ class MyPlugin(Star):
             yield event.plain_result(f"发送测试消息失败: {e}")
             
     @filter.command("测试定时消息d")
-    async def test_scheduled_message(self, event: AstrMessageEvent):
+    async def test_scheduled_message_d(self, event: AstrMessageEvent):
         """
         测试定时消息功能（发送给所有订阅者）
         """
