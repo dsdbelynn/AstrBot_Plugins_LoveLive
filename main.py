@@ -271,6 +271,24 @@ class MyPlugin(Star):
         ret = f"{time_str}\n{quote}"
         yield event.plain_result(ret)
 
+    @filter.command("测试d")
+    async def sweetNothing_Hello(self, event: AstrMessageEvent):
+        from datetime import datetime, timezone, timedelta
+        
+        # 获取当前UTC+8时间（北京时间）
+        utc8_tz = timezone(timedelta(hours=8))
+        current_time = datetime.now(utc8_tz)
+        
+        # 格式化时间为指定格式：2025/08/04 02:01:01
+        time_str = current_time.strftime("%Y/%m/%d %H:%M:%S")
+        
+        # 获取渣女语录
+        quote = await self.get_sweet_nothing_deepseek("F")
+        
+        # 组合当前时间和渣女语录
+        ret = f"{time_str}\n{quote}"
+        yield event.plain_result(ret)
+
     @filter.command("测试定时消息")
     async def test_scheduled_message(self, event: AstrMessageEvent):
         """
@@ -286,6 +304,45 @@ class MyPlugin(Star):
             
             # 获取渣女语录
             quote = await self.get_sweet_nothing("F")
+            
+            # 组合消息：时间 + 早上好中午好晚上好 + 【渣女语录】
+            message_text = f"{time_str} 早上好中午好晚上好，【{quote}】"
+            
+            # 发送前更新订阅者列表
+            await self.load_subscribers()
+            
+            # 发送给所有订阅者
+            if self.subscribers:
+                message_chain = MessageChain().message(message_text)
+                for sub in self.subscribers:
+                    await self.context.send_message(sub, message_chain)
+                    await asyncio.sleep(1)  # 延时1秒钟
+                
+                ret = f"测试消息已发送给 {len(self.subscribers)} 个订阅者\n内容: {message_text}"
+            else:
+                ret = "没有订阅者，无法发送测试消息"
+            
+            yield event.plain_result(ret)
+            
+        except Exception as e:
+            logger.error(f"发送测试消息失败: {e}")
+            yield event.plain_result(f"发送测试消息失败: {e}")
+            
+    @filter.command("测试定时消息d")
+    async def test_scheduled_message(self, event: AstrMessageEvent):
+        """
+        测试定时消息功能（发送给所有订阅者）
+        """
+        try:
+            # 获取当前UTC+8时间
+            utc8_tz = timezone(timedelta(hours=8))
+            current_time = datetime.now(utc8_tz)
+            
+            # 格式化时间
+            time_str = current_time.strftime("%Y/%m/%d %H:%M:%S")
+            
+            # 获取渣女语录
+            quote = await self.get_sweet_nothing_deepseek("F")
             
             # 组合消息：时间 + 早上好中午好晚上好 + 【渣女语录】
             message_text = f"{time_str} 早上好中午好晚上好，【{quote}】"
