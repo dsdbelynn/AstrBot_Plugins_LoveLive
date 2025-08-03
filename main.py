@@ -15,7 +15,7 @@ DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
 SUBSCRIBERS_FILE_PATH = "/AstrBot/data/subscribers.json"
 
-@register("LoveLive", "Lynn", "一个简单的插件", "1.0.10")
+@register("LoveLive", "Lynn", "一个简单的插件", "1.0.0")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
@@ -85,6 +85,7 @@ class MyPlugin(Star):
         """
         
         return prompt
+    
     async def get_sweet_nothing_deepseek(self, gender_type: str, time_period: str, count: int = 1) -> str:
         """
         调用DeepSeek API生成渣男/渣女语录
@@ -94,7 +95,7 @@ class MyPlugin(Star):
         """
         
         # 构建提示词
-        prompt = build_sweet_nothing_prompt(gender_type, time_period, count)
+        prompt = self.build_sweet_nothing_prompt(gender_type, time_period, count)
         
         headers = {
             "Content-Type": "application/json",
@@ -272,8 +273,15 @@ class MyPlugin(Star):
         yield event.plain_result(ret)
 
     @filter.command("测试d")
-    async def sweetNothing_Hello_d(self, event: AstrMessageEvent):
+    async def sweetNothing_Hello_d(self, event: AstrMessageEvent, message: str):
         from datetime import datetime, timezone, timedelta
+        
+        # 检查参数是否正确
+        valid_periods = ["morning", "noon", "evening"]
+        if message not in valid_periods:
+            ret = "参数错误"
+            yield event.plain_result(ret)
+            return
         
         # 获取当前UTC+8时间（北京时间）
         utc8_tz = timezone(timedelta(hours=8))
@@ -282,12 +290,13 @@ class MyPlugin(Star):
         # 格式化时间为指定格式：2025/08/04 02:01:01
         time_str = current_time.strftime("%Y/%m/%d %H:%M:%S")
         
-        # 获取渣女语录
-        quote = await self.get_sweet_nothing_deepseek("F")
+        # 获取渣女语录，传入时间段参数
+        quote = await self.get_sweet_nothing_deepseek("F", message)
         
         # 组合当前时间和渣女语录
         ret = f"{time_str}\n{quote}"
         yield event.plain_result(ret)
+
 
     @filter.command("测试定时消息")
     async def test_scheduled_message(self, event: AstrMessageEvent):
@@ -329,10 +338,16 @@ class MyPlugin(Star):
             yield event.plain_result(f"发送测试消息失败: {e}")
             
     @filter.command("测试定时消息d")
-    async def test_scheduled_message_d(self, event: AstrMessageEvent):
+    async def test_scheduled_message_d(self, event: AstrMessageEvent, message: str):
         """
         测试定时消息功能（发送给所有订阅者）
         """
+        # 检查参数是否正确
+        valid_periods = ["morning", "noon", "evening"]
+        if message not in valid_periods:
+            ret = "参数错误"
+            yield event.plain_result(ret)
+            return
         try:
             # 获取当前UTC+8时间
             utc8_tz = timezone(timedelta(hours=8))
@@ -342,7 +357,7 @@ class MyPlugin(Star):
             time_str = current_time.strftime("%Y/%m/%d %H:%M:%S")
             
             # 获取渣女语录
-            quote = await self.get_sweet_nothing_deepseek("F")
+            quote = await self.get_sweet_nothing_deepseek("F", message)
             
             # 组合消息：时间 + 早上好中午好晚上好 + 【渣女语录】
             message_text = f"{time_str} 早上好中午好晚上好，【{quote}】"
