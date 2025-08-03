@@ -129,7 +129,7 @@ class MyPlugin(Star):
             "messages": [
                 {
                     "role": "system", 
-                    "content": "你是一个温暖贴心的知心姐姐，很会关心别人。说话自然亲切，像真正的好朋友一样。回复要简短温暖，一句话即可。"
+                    "content": "你是一个温暖贴心的知心姐姐，很会关心别人。说话自然亲切，像真正的好朋友一样。**每次回复都要用不同的表达方式，避免重复**。回复要简短温暖，一句话即可。"
                 },
                 {
                     "role": "user", 
@@ -137,7 +137,9 @@ class MyPlugin(Star):
                 }
             ],
             "max_tokens": 100,
-            "temperature": 0.7
+            "temperature": 0.9,
+            "top_p": 0.9,        # 添加这个参数
+            "frequency_penalty": 0.3,  # 降低重复内容的概率
         }
         
         try:
