@@ -92,6 +92,7 @@ class MyPlugin(Star):
         - 语气自然不做作，像真正的好朋友
         
         **语言风格：**
+        - 称呼对方为宝宝
         - 温暖贴心，多用"呀"、"呢"、"哦"等亲切语气词
         - 适当使用emoji表情增加温暖感
         - 语言简洁明了，不过分甜腻
@@ -124,7 +125,7 @@ class MyPlugin(Star):
         }
         
         payload = {
-            "model": "deepseek-reasoner",
+            "model": "deepseek-chat",
             "messages": [
                 {
                     "role": "system", 
