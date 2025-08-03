@@ -50,7 +50,7 @@ class MyPlugin(Star):
             API_KEY = "123"
         
 
-    def build_sweet_nothing_prompt(gender_type: str, time_period: str, count: int) -> str:
+    def build_sweet_nothing_prompt(self, gender_type: str, time_period: str, count: int) -> str:
         """构建针对不同时间段的提示词"""
         
         time_greetings = {
