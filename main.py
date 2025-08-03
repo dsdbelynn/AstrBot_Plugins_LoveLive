@@ -8,16 +8,136 @@ import asyncio
 import os
 from datetime import datetime, timezone, timedelta
 
+# 全局变量
+API_KEY = None
+API_KEY_PATH = "/AstrBot/data/API_KEY"
+DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
+
 SUBSCRIBERS_FILE_PATH = "/AstrBot/data/subscribers.json"
 
-@register("LoveLive", "Lynn", "一个简单的插件", "1.0.6")
+@register("LoveLive", "Lynn", "一个简单的插件", "1.0.8")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
+        self.check_api_key()
         self.context = context
         self.subscribers = []  # 存储从文件读取的订阅者列表
         # 启动定时任务
         asyncio.create_task(self.start_scheduled_tasks())
+
+
+
+    def check_api_key():
+        """检查API_KEY文件，读取到全局变量中，没有则创建并填入123"""
+        
+        try:
+            # 确保目录存在
+            os.makedirs(os.path.dirname(API_KEY_PATH), exist_ok=True)
+            
+            if os.path.exists(API_KEY_PATH):
+                # 文件存在，读取内容
+                with open(API_KEY_PATH, 'r', encoding='utf-8') as f:
+                    API_KEY = f.read().strip() or "123"
+            else:
+                # 文件不存在，创建并填入默认值
+                with open(API_KEY_PATH, 'w', encoding='utf-8') as f:
+                    f.write("123")
+                API_KEY = "123"
+            
+        except Exception:
+            # 异常时使用默认值
+            API_KEY = "123"
+        
+        return API_KEY
+
+    def build_sweet_nothing_prompt(gender_type: str, time_period: str, count: int) -> str:
+        """构建针对不同时间段的提示词"""
+        
+        time_greetings = {
+            "morning": "早安",
+            "noon": "午安", 
+            "evening": "晚安"
+        }
+        
+        time_contexts = {
+            "morning": "刚起床，想要一些温暖甜蜜的话语开始新的一天",
+            "noon": "中午休息时间，需要一些关怀和调情的话语",
+            "evening": "夜晚来临，想要一些浪漫暧昧的晚安话语"
+        }
+        
+        greeting = time_greetings.get(time_period, "你好")
+        context = time_contexts.get(time_period, "日常聊天")
+        
+        if gender_type == "F":  # 渣女/绿茶
+            persona = "作为一个很会撩人的海王渣女"
+        else:  # 渣男
+            persona = "作为一个油嘴滑舌的渣男"
+        
+        prompt = f"""
+        {persona}，现在是{time_period}时间段，{context}。
+        请生成{count}句适合发给暧昧对象的{greeting}语录。
+        要求：
+        1. 语言要甜腻、暧昧、有套路感
+        2. 要体现出海王/渣的特质（暧昧但不承诺）
+        3. 符合{time_period}的时间氛围
+        4. 每句话控制在20字以内
+        5. 只返回语录内容，不需要其他解释
+        """
+        
+        return prompt
+    async def get_sweet_nothing_deepseek(self, gender_type: str, time_period: str, count: int = 1) -> str:
+        """
+        调用DeepSeek API生成渣男/渣女语录
+        gender_type: "M" 为渣男, "F" 为绿茶/渣女  
+        time_period: "morning" 早上, "noon" 中午, "evening" 晚上
+        count: 获取数量，默认为1
+        """
+        
+        # 构建提示词
+        prompt = build_sweet_nothing_prompt(gender_type, time_period, count)
+        
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {API_KEY}"
+        }
+        
+        payload = {
+            "model": "deepseek-chat",
+            "messages": [
+                {
+                    "role": "system", 
+                    "content": "你是一个很会说话的海王渣女，擅长用各种甜言蜜语和套路。回复要简短精炼，一句话即可。"
+                },
+                {
+                    "role": "user", 
+                    "content": prompt
+                }
+            ],
+            "max_tokens": 100,
+            "temperature": 0.8
+        }
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    DEEPSEEK_API_URL, 
+                    headers=headers,
+                    json=payload,
+                    timeout=aiohttp.ClientTimeout(total=10)
+                ) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        if 'choices' in data and len(data['choices']) > 0:
+                            content = data['choices'][0]['message']['content'].strip()
+                            return content
+                        else:
+                            return "今天心情不好，不想说话~"
+                    else:
+                        logger.error(f"DeepSeek API请求失败，状态码: {response.status}")
+                        return "网络有点问题呢，待会再撩你~"
+        except Exception as e:
+            logger.error(f"DeepSeek API调用异常: {e}")
+            return "哎呀，出了点小状况~"
     
     async def get_sweet_nothing(self, gender_type: str, count: int = 1) -> str:
         """
@@ -189,5 +309,7 @@ class MyPlugin(Star):
         except Exception as e:
             logger.error(f"发送测试消息失败: {e}")
             yield event.plain_result(f"发送测试消息失败: {e}")
+
+            
 
         
