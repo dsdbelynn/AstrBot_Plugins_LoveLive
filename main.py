@@ -15,7 +15,7 @@ DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
 SUBSCRIBERS_FILE_PATH = "/AstrBot/data/subscribers.json"
 
-@register("LoveLive", "Lynn", "一个简单的插件", "1.0.8")
+@register("LoveLive", "Lynn", "一个简单的插件", "1.0.9")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
@@ -27,7 +27,7 @@ class MyPlugin(Star):
 
 
 
-    def check_api_key():
+    def check_api_key(self):
         """检查API_KEY文件，读取到全局变量中，没有则创建并填入123"""
         
         try:
