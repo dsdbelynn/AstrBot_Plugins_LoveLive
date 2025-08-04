@@ -103,7 +103,7 @@ class MyPlugin(Star):
         - 语气要符合{time_period}的氛围
         - 让人感受到被关心和温暖
         
-        请生成一句温暖贴心的{greeting}话语，要自然真诚，不要过于夸张。
+        请生成一段温暖贴心的{greeting}话语，要自然真诚，不要过于夸张。
         """
         
         return prompt
@@ -129,7 +129,7 @@ class MyPlugin(Star):
             "messages": [
                 {
                     "role": "system", 
-                    "content": "你是一个温暖贴心的知心姐姐，很会关心别人。说话自然亲切，像真正的好朋友一样。**每次回复都要用不同的表达方式，避免重复**。回复要简短温暖，一句话即可。"
+                    "content": "你是一个温暖贴心的知心姐姐，很会关心别人。说话自然亲切，像真正的好朋友一样。**每次回复都要用不同的表达方式，避免重复**。"
                 },
                 {
                     "role": "user", 
@@ -308,15 +308,15 @@ class MyPlugin(Star):
                 current_time = datetime.now(utc8_tz)
                 current_hour = current_time.hour
                 current_minute = current_time.minute
-                
-                # 检查是否为指定时间点（精确到分钟）
-                if current_hour == 9:
-                    await self.send_scheduled_message_d("morning")
-                elif current_hour == 12:
-                    await self.send_scheduled_message_d("noon")
-                elif current_hour == 23:
-                    await self.send_scheduled_message_d("evening")                
-                # 等待60秒后再次检查
+                if current_minute == 0:
+                    # 检查是否为指定时间点（精确到分钟）
+                    if current_hour == 9:
+                        await self.send_scheduled_message_d("morning")
+                    elif current_hour == 12:
+                        await self.send_scheduled_message_d("noon")
+                    elif current_hour == 23:
+                        await self.send_scheduled_message_d("evening")                
+                    # 等待60秒后再次检查
                 await asyncio.sleep(60)
                 
             except Exception as e:
